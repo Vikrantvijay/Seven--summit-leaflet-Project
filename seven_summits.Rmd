@@ -1,0 +1,96 @@
+---
+title: "Seven Summits: An Interactive Expedition Atlas"
+author: "Interactive Mapping Project"
+date: "2026-10-17"
+output:
+  html_document:
+    self_contained: true
+    theme: flatly
+    toc: false
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE)
+library(leaflet)
+library(htmltools)
+library(magrittr)
+```
+
+<style>
+body {font-family: "Arial", sans-serif; background: #f6f8f7; color: #162936;}
+.main-container {max-width: 1180px !important;}
+.atlas-hero {background: linear-gradient(115deg,#102330,#294c58); color:#f4f8f7; border-radius:18px; padding:37px 39px; margin:18px 0 28px;}
+.atlas-hero h1 {font-size:37px; font-weight:800; margin:8px 0 12px; color:#f4f8f7;}
+.atlas-hero p {color:#c5d8d6; font-size:15px; max-width:720px;}
+.kicker {text-transform:uppercase; font-weight:800; letter-spacing:.17em; color:#efc18d; font-size:11px;}
+.created {padding:10px 14px; background:#e9f0ec; border-radius:8px; display:inline-block; color:#3c5d61; font-weight:600; margin-bottom:20px;}
+.leaflet-container {border:1px solid #d3e3df; border-radius:15px;}
+.note {font-size:13px; color:#61787a; margin-top:16px; line-height:1.65;}
+</style>
+
+<div class="atlas-hero">
+  <span class="kicker">An interactive expedition atlas</span>
+  <h1>Seven summits. One extraordinary planet.</h1>
+  <p>Discover the tallest summit on every continent. Click a golden map marker to view its elevation, location and story. Zoom, pan and switch map layers.</p>
+</div>
+
+<div class="created">Document created: <strong>October 17, 2026</strong></div>
+
+## Explore the Seven Summits
+
+```{r summit-map, fig.width=12, fig.height=7}
+summits <- data.frame(
+  mountain = c("Mount Everest", "Aconcagua", "Denali", "Kilimanjaro",
+               "Mount Elbrus", "Vinson Massif", "Puncak Jaya"),
+  continent = c("Asia", "South America", "North America", "Africa",
+                "Europe", "Antarctica", "Oceania"),
+  location = c("Nepal / China", "Argentina", "Alaska, United States", "Tanzania",
+               "Russia", "Ellsworth Mountains, Antarctica", "Central Papua, Indonesia"),
+  elevation_m = c(8848.86, 6961, 6190, 5895, 5642, 4892, 4884),
+  latitude = c(27.9881, -32.6532, 63.0695, -3.0674, 43.3499, -78.5255, -4.0788),
+  longitude = c(86.9250, -70.0109, -151.0074, 37.3556, 42.4453, -85.6171, 137.1583),
+  stringsAsFactors = FALSE
+)
+
+summits$popup <- sprintf(
+  "<div style='line-height:1.6'><b style='font-size:17px'>%s</b><br>%s<br><b>Elevation: %s m</b></div>",
+  htmlEscape(summits$mountain),
+  htmlEscape(summits$location),
+  format(summits$elevation_m, big.mark = ",", trim = TRUE)
+)
+
+atlas <- leaflet(options = leafletOptions(minZoom = 1, worldCopyJump = TRUE),
+                 height = 575) %>%
+  addProviderTiles(providers$CartoDB.Positron, group = "Light atlas") %>%
+  addProviderTiles(providers$Esri.WorldImagery, group = "Satellite imagery") %>%
+  setView(lng = 14, lat = 18, zoom = 2)
+
+for (i in seq_len(nrow(summits))) {
+  point <- summits[i, ]
+  atlas <- atlas %>%
+    addCircleMarkers(
+      lng = point$longitude, lat = point$latitude,
+      radius = 9, color = "#17303B", weight = 2, stroke = TRUE,
+      fillColor = "#EDB269", fillOpacity = 1,
+      label = point$mountain,
+      popup = HTML(point$popup),
+      group = point$continent
+    )
+}
+
+atlas <- atlas %>%
+  addLayersControl(
+    baseGroups = c("Light atlas", "Satellite imagery"),
+    overlayGroups = unique(summits$continent),
+    position = "topright",
+    options = layersControlOptions(collapsed = TRUE)
+  )
+
+atlas
+```
+
+<div class="note">
+<strong>How to interact:</strong> Click a summit marker for a popup. Use your mouse or touch controls to pan and zoom. In the upper-right corner, select satellite imagery or toggle continents on and off.<br><br>
+<strong>Geographic note:</strong> This project uses the Messner Seven Summits list, which includes Puncak Jaya for Oceania rather than Mount Kosciuszko. Summit coordinates and elevations are approximate reference values.<br><br>
+<strong>Created:</strong> October 17, 2026. <strong>Technology:</strong> R Markdown + R <code>leaflet</code> package + OpenStreetMap/CARTO/Esri tiles.
+</div>

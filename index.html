@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Explore the seven continental summits on an interactive Leaflet map. Created October 17, 2026.">
+  <meta name="theme-color" content="#132331">
+  <title>Seven Summits | A Leaflet Expedition Atlas</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css">
+  <style>
+    :root{--ink:#162936;--mid:#526775;--muted:#718590;--dark:#102330;--dark2:#1d3945;--accent:#ecad6d;--mint:#b8dfd2;--paper:#f6f8f7;--line:#dce5e4;--white:#fff}
+    *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;font-family:'DM Sans',Arial,sans-serif;color:var(--ink);background:var(--paper)}
+    h1,h2,h3,p{margin-top:0}button{font:inherit}a{color:inherit;text-decoration:none}button:focus-visible,a:focus-visible{outline:3px solid #e1a45a;outline-offset:4px}
+    .shell{max-width:1340px;padding:0 38px;margin:auto}
+    .site-header{background:var(--dark);color:#eef6f4;border-bottom:1px solid #344651}.header-inner{min-height:82px;display:flex;align-items:center;justify-content:space-between;gap:20px}
+    .brand{display:flex;align-items:center;gap:13px;font-family:Manrope,Arial,sans-serif;font-size:15px;font-weight:800;letter-spacing:.14em;text-transform:uppercase}
+    .logo{display:grid;place-items:center;width:40px;height:40px;border:1px solid #9faeae;border-radius:13px;color:var(--mint)}
+    .nav{display:flex;gap:30px;align-items:center;font-size:13px;font-weight:700;color:#bdcfce}.nav a:hover{color:white}
+    .date-chip{display:flex;align-items:center;gap:9px;font-size:12px;color:#d6e7e2;background:#24414c;border:1px solid #46626b;padding:10px 13px;border-radius:99px}
+    .date-dot{height:8px;width:8px;background:var(--accent);border-radius:50%}
+    .hero{overflow:hidden;position:relative;background:radial-gradient(ellipse at 70% 20%,#315360 0%,transparent 48%),linear-gradient(125deg,#102330 0%,#1b3845 65%,#233e4b 100%);color:#eef7f6;min-height:475px}
+    .hero .shell{position:relative;z-index:2}.hero-content{padding-top:73px;padding-bottom:88px;max-width:800px}
+    .eyebrow{color:#ecb779;letter-spacing:.19em;text-transform:uppercase;font-weight:800;font-size:11px}.eyebrow:before{content:'';display:inline-block;width:27px;height:2px;background:currentColor;vertical-align:middle;margin-right:12px}
+    h1{font-family:Manrope,Arial,sans-serif;line-height:1.115;font-size:clamp(40px,5vw,69px);font-weight:800;letter-spacing:-.056em;margin:24px 0 18px;max-width:790px}
+    .hero-lead{color:#b6d0cf;line-height:1.7;font-size:16px;max-width:610px;margin:0 0 30px}
+    .hero-stat-row{display:flex;flex-wrap:wrap;gap:34px;margin-top:40px}
+    .hero-stat{padding-right:34px;border-right:1px solid #52707b}.hero-stat:last-child{border:0}
+    .hero-stat strong{display:block;font:800 29px Manrope,sans-serif;letter-spacing:-.04em;color:#f0d2a5}.hero-stat span{display:block;color:#b9cfce;font-size:11px;letter-spacing:.08em;text-transform:uppercase;margin-top:5px}
+    .mountain-art{position:absolute;right:0;bottom:-2px;height:260px;min-width:70%;opacity:.26;pointer-events:none}.mountain-art path:nth-child(1){fill:#789d9c}.mountain-art path:nth-child(2){fill:#527a82}.mountain-art path:nth-child(3){fill:#264652}
+    .section{padding-top:62px;padding-bottom:72px}.section-top{display:flex;justify-content:space-between;align-items:flex-end;gap:24px;margin-bottom:25px}
+    .section-top h2{font:800 35px Manrope,sans-serif;letter-spacing:-.05em;margin:13px 0 8px}.section-desc{font-size:14px;color:var(--mid);line-height:1.65;margin:0}
+    .micro-note{font-size:12px;color:var(--mid);background:#eaf0ed;padding:10px 14px;border-radius:10px;white-space:nowrap}
+    .filterbar{display:flex;gap:9px;overflow-x:auto;padding-bottom:17px;scrollbar-width:thin;scrollbar-color:#ceddd9 transparent}
+    .filter{border:1px solid #cddedc;background:#fff;padding:11px 15px;border-radius:9px;font-size:12px;font-weight:700;color:#47616c;cursor:pointer;white-space:nowrap;transition:.2s}
+    .filter:hover{border-color:#69878b}.filter[aria-pressed='true']{background:var(--dark);color:white;border-color:var(--dark)}
+    .atlas{border:1px solid #d7e2e0;border-radius:18px;overflow:hidden;display:grid;grid-template-columns:minmax(0,1.65fr) minmax(310px,.76fr);background:white;box-shadow:0 24px 55px #132b3011}
+    .map-wrap{position:relative;min-height:605px;background:#dfebeb}.map{height:605px;width:100%;z-index:1}
+    .map-fallback{pointer-events:none;position:absolute;z-index:0;inset:0;background:repeating-linear-gradient(0deg,transparent 0,transparent 79px,#c9d9d74d 80px),repeating-linear-gradient(90deg,transparent 0,transparent 79px,#c9d9d74d 80px),#dcebea;display:grid;place-content:center;text-align:center;color:#657f83;padding:30px}.map-fallback strong{display:block;font-size:18px;margin-bottom:8px}.map-fallback small{max-width:350px;line-height:1.6}
+    .map-hint{position:absolute;left:19px;top:17px;z-index:450;background:#ffffffeb;box-shadow:0 8px 30px #182e3514;border-radius:9px;padding:12px 14px;font-size:11px;font-weight:700;color:#4e646b;pointer-events:none}
+    .side{background:#fff;border-left:1px solid #e1e8e7;display:flex;flex-direction:column;min-width:0}
+    .side-header{padding:23px 23px 17px;border-bottom:1px solid #edf1f0;display:flex;align-items:center;justify-content:space-between;gap:10px}
+    .side-header strong{font:800 16px Manrope,sans-serif}.count{font-size:11px;font-weight:700;background:#e9f1ed;border-radius:50px;color:#45665f;padding:6px 10px}
+    .summits-list{overflow-y:auto;flex:1;max-height:515px}.summit{display:flex;gap:15px;align-items:flex-start;padding:19px 23px;text-align:left;width:100%;background:white;border:0;border-bottom:1px solid #edf1f0;cursor:pointer;transition:background .18s}
+    .summit:hover,.summit.selected{background:#f2f7f4}.summit.selected{box-shadow:inset 3px 0 #d89b5c}.summit-index{font:800 11px Manrope,sans-serif;color:#ca9457;background:#f9ebd8;display:grid;place-items:center;width:29px;height:29px;border-radius:8px;flex-shrink:0;margin-top:2px}
+    .summit-info{min-width:0;flex:1}.summit-name{font:800 13px Manrope,sans-serif;margin-bottom:7px}.summit-country{font-size:11px;color:#758890;margin-bottom:9px;line-height:1.45}.summit-elev{font:800 15px Manrope,sans-serif;color:#304b55}.summit-elev small{font:600 11px 'DM Sans',sans-serif;color:#758b91;margin-left:4px}
+    .side-footer{padding:17px 22px;background:#f7faf8;border-top:1px solid #e8efec;color:#637a78;font-size:11px;line-height:1.55}
+    .bottom-notes{display:grid;grid-template-columns:1fr 1fr 1fr;gap:15px;margin-top:20px}.note{background:#fff;border:1px solid #dbe5e3;border-radius:14px;padding:22px;min-height:135px}
+    .note .num{font:800 12px Manrope,sans-serif;color:#b7824d}.note h3{font:800 14px Manrope,sans-serif;margin:12px 0 8px}.note p{font-size:12px;line-height:1.6;color:#627b7d;margin:0}
+    .site-footer{border-top:1px solid #dde6e3;padding:24px 0 35px;color:#69807e;font-size:12px}.footer-inner{display:flex;justify-content:space-between;gap:15px;flex-wrap:wrap}
+    .mountain-popup h3{font:800 18px Manrope,sans-serif;margin:0 0 8px;color:#142c37}.mountain-popup .overline{color:#b37d42;font-size:10px;text-transform:uppercase;font-weight:800;letter-spacing:.12em}
+    .mountain-popup p{font:400 12px/1.55 'DM Sans',sans-serif;color:#526b72;margin:8px 0}.mountain-popup .metric{display:block;font:800 20px Manrope,sans-serif;color:#163642}.leaflet-popup-content{margin:18px 18px 16px}.leaflet-popup-content-wrapper{border-radius:14px;box-shadow:0 12px 28px #172b3670}
+    .leaflet-container{font-family:'DM Sans',Arial,sans-serif;background:#dae8e7}.leaflet-control-layers,.leaflet-control-zoom{border:0!important;box-shadow:0 7px 21px #24394328!important}
+    @media(max-width:980px){.shell{padding:0 24px}.atlas{grid-template-columns:1fr}.map-wrap,.map{min-height:500px;height:500px}.side{border-left:0;border-top:1px solid #e0e8e7}.summits-list{max-height:300px}.bottom-notes{grid-template-columns:1fr 1fr}}
+    @media(max-width:600px){.shell{padding:0 17px}.nav{display:none}.header-inner{min-height:70px}.brand{font-size:12px;letter-spacing:.1em}.date-chip{font-size:10px}.hero-content{padding-top:60px;padding-bottom:64px}.hero{min-height:auto}h1{font-size:41px}.hero-lead{font-size:14px}.hero-stat-row{gap:16px}.hero-stat{padding-right:17px}.hero-stat strong{font-size:24px}.hero-stat span{font-size:9px}.section{padding-top:38px;padding-bottom:45px}.section-top h2{font-size:29px}.micro-note{display:none}.map-wrap,.map{height:440px;min-height:440px}.map-hint{font-size:10px;left:9px;top:9px;padding:8px}.bottom-notes{grid-template-columns:1fr}.side-header{padding:19px}.summit{padding:16px 19px}}
+    @media(prefers-reduced-motion:reduce){*,*:before,*:after{scroll-behavior:auto!important;transition:none!important}}
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="shell header-inner">
+      <a href="#top" class="brand" aria-label="Seven Summits home">
+        <span class="logo" aria-hidden="true"><svg width="27" height="26" viewBox="0 0 27 26" fill="none"><path d="m1 22 9-13 4 6 4-11 8 18H1Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="m7 13 3 3 2-3m4-3 2 2 2-2" stroke="currentColor" stroke-width="1.4"/></svg></span>
+        <span>Seven Summits</span>
+      </a>
+      <nav class="nav" aria-label="Main navigation"><a href="#atlas">Interactive map</a><a href="#field-notes">Field notes</a></nav>
+      <span class="date-chip"><span class="date-dot" aria-hidden="true"></span> Created Oct 17, 2026</span>
+    </div>
+  </header>
+  <main id="top">
+    <section class="hero" aria-labelledby="hero-title">
+      <svg class="mountain-art" viewBox="0 0 1100 260" preserveAspectRatio="none" aria-hidden="true"><path d="M0 260 180 100 265 190 420 15 575 210 730 62 850 177 945 110 1100 260Z"/><path d="M0 260 125 190 260 60 375 191 530 112 675 260 805 90 960 196 1100 128 1100 260Z"/><path d="M0 260 150 224 350 161 494 251 646 135 797 215 900 169 1100 230 1100 260Z"/></svg>
+      <div class="shell"><div class="hero-content">
+        <div class="eyebrow">An interactive expedition atlas</div>
+        <h1>Seven summits.<br>One extraordinary planet.</h1>
+        <p class="hero-lead">From the Himalaya to Antarctica, explore the tallest summit on each continent. Select a peak, follow its coordinates, and discover the scale of our world.</p>
+        <div class="hero-stat-row" aria-label="Atlas statistics">
+          <div class="hero-stat"><strong>07</strong><span>Continental peaks</span></div>
+          <div class="hero-stat"><strong>8,849 m</strong><span>Highest summit</span></div>
+          <div class="hero-stat"><strong>07</strong><span>Continents</span></div>
+        </div>
+      </div></div>
+    </section>
+    <section id="atlas" class="section shell" aria-labelledby="map-title">
+      <div class="section-top"><div><div class="eyebrow" style="color:#b37b48">Explore the elevation</div><h2 id="map-title">The world, one peak at a time</h2><p class="section-desc">Click a marker or a mountain below. Filter by continent, pan, zoom, or switch to satellite view.</p></div><div class="micro-note">Interactive map · Powered by Leaflet</div></div>
+      <div id="filters" class="filterbar" role="group" aria-label="Filter mountain markers by continent">
+        <button class="filter" aria-pressed="true" data-filter="All">All peaks</button>
+        <button class="filter" aria-pressed="false" data-filter="Asia">Asia</button>
+        <button class="filter" aria-pressed="false" data-filter="South America">South America</button>
+        <button class="filter" aria-pressed="false" data-filter="North America">North America</button>
+        <button class="filter" aria-pressed="false" data-filter="Africa">Africa</button>
+        <button class="filter" aria-pressed="false" data-filter="Europe">Europe</button>
+        <button class="filter" aria-pressed="false" data-filter="Antarctica">Antarctica</button>
+        <button class="filter" aria-pressed="false" data-filter="Oceania">Oceania</button>
+      </div>
+      <div class="atlas">
+        <div class="map-wrap">
+          <div class="map-fallback" id="map-fallback" aria-hidden="true"><strong>Explore the summits on the map</strong><small>The interactive map will load here when Leaflet and the map tiles are available.</small></div>
+          <div id="map" class="map" role="application" aria-label="Interactive Leaflet world map with seven summit markers"></div>
+          <div class="map-hint">↗ &nbsp;Click the golden markers to explore</div>
+        </div>
+        <aside class="side" aria-label="Summits explorer">
+          <div class="side-header"><strong>Summit directory</strong><span id="peak-count" class="count" aria-live="polite">7 peaks</span></div>
+          <div id="summit-list" class="summits-list" aria-label="Select a mountain"></div>
+          <div class="side-footer">▲ The Seven Summits here follow the Messner geographic list, which uses Puncak Jaya for Oceania. A different list uses Mount Kosciuszko.</div>
+        </aside>
+      </div>
+      <div id="field-notes" class="bottom-notes">
+        <article class="note"><span class="num">01 / DISCOVER</span><h3>Explore the markers</h3><p>Select any summit to open its elevation, location, and short field note.</p></article>
+        <article class="note"><span class="num">02 / NAVIGATE</span><h3>Change your perspective</h3><p>Use +/− to zoom, drag to move, and the upper-right layer switcher for satellite imagery.</p></article>
+        <article class="note"><span class="num">03 / HOW IT WORKS</span><h3>Built with Leaflet</h3><p>An R Markdown source accompanies this published-ready HTML. Coordinates are approximate summit locations.</p></article>
+      </div>
+    </section>
+  </main>
+  <footer class="site-footer"><div class="shell footer-inner"><span>Seven Summits · A creative R Markdown &amp; Leaflet mapping project</span><span>Document created: <time datetime="2026-10-17">October 17, 2026</time></span></div></footer>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" onerror="var s=document.createElement('script');s.src='https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js';document.head.appendChild(s)"></script>
+  <script>
+  'use strict';
+  const peaks = [{"name":"Mount Everest","continent":"Asia","region":"Nepal / China","elevation":8848.86,"lat":27.9881,"lon":86.925,"tagline":"The highest point on Earth.","detail":"The summit rises above the Himalaya on the Nepal–Tibet border.","id":"everest"},{"name":"Aconcagua","continent":"South America","region":"Argentina","elevation":6961,"lat":-32.6532,"lon":-70.0109,"tagline":"The roof of the Andes.","detail":"The highest mountain outside Asia.","id":"aconcagua"},{"name":"Denali","continent":"North America","region":"Alaska, United States","elevation":6190,"lat":63.0695,"lon":-151.0074,"tagline":"North America’s towering giant.","detail":"Famous for its dramatic relief and severe subarctic weather.","id":"denali"},{"name":"Kilimanjaro","continent":"Africa","region":"Tanzania","elevation":5895,"lat":-3.0674,"lon":37.3556,"tagline":"An isolated volcanic massif.","detail":"An extraordinary journey through changing ecological zones.","id":"kilimanjaro"},{"name":"Mount Elbrus","continent":"Europe","region":"Russia","elevation":5642,"lat":43.3499,"lon":42.4453,"tagline":"A twin-peaked volcanic mountain.","detail":"A Caucasus giant, included in the European Seven Summits list.","id":"elbrus"},{"name":"Vinson Massif","continent":"Antarctica","region":"Ellsworth Mountains, Antarctica","elevation":4892,"lat":-78.5255,"lon":-85.6171,"tagline":"The continent’s remote summit.","detail":"A remote Antarctic peak requiring an expedition to reach.","id":"vinson"},{"name":"Puncak Jaya","continent":"Oceania","region":"Central Papua, Indonesia","elevation":4884,"lat":-4.0788,"lon":137.1583,"tagline":"A dramatic equatorial rock summit.","detail":"Also called Carstensz Pyramid; the Oceania peak in the Messner list.","id":"puncak"}];
+  let map = null;
+  let markerById = Object.create(null);
+  let activeContinent = 'All';
+  let selectedId = null;
+  const listEl = document.getElementById('summit-list');
+  const countEl = document.getElementById('peak-count');
+  const fallbackEl = document.getElementById('map-fallback');
+  function safe(s){return String(s).replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));}
+  function fmt(n){return Math.round(n).toLocaleString('en-US');}
+  function buildList(){
+    const visible = peaks.filter(p=>activeContinent==='All'||p.continent===activeContinent);
+    countEl.textContent = `${visible.length} ${visible.length===1?'peak':'peaks'}`;
+    listEl.innerHTML='';
+    visible.forEach((p,ix)=>{
+      const btn = document.createElement('button');btn.type='button';btn.className='summit'+(selectedId===p.id?' selected':'');btn.setAttribute('aria-label',`Explore ${p.name}`);
+      btn.innerHTML=`<span class="summit-index">${String(ix+1).padStart(2,'0')}</span><span class="summit-info"><span class="summit-name" style="display:block">${safe(p.name)}</span><span class="summit-country" style="display:block">${safe(p.continent)} · ${safe(p.region)}</span><span class="summit-elev" style="display:block">${fmt(p.elevation)}<small>m above sea level</small></span></span>`;
+      btn.addEventListener('click',()=>focusPeak(p.id));listEl.appendChild(btn);
+    });
+  }
+  function showFilter(continent){
+    activeContinent=continent;selectedId=null;
+    document.querySelectorAll('[data-filter]').forEach(btn=>btn.setAttribute('aria-pressed',String(btn.dataset.filter===continent)));
+    if(map){
+      const visible=peaks.filter(p=>continent==='All'||p.continent===continent);
+      for(const p of peaks){if(markerById[p.id]){if(visible.includes(p)) markerById[p.id].addTo(map);else map.removeLayer(markerById[p.id]);}}
+      map.closePopup();
+      if(continent==='All')map.flyTo([18,14],2,{duration:0.7});
+      else if(visible.length)map.flyTo([visible[0].lat,visible[0].lon],continent==='Antarctica'?4:5,{duration:0.7});
+    }
+    buildList();
+  }
+  function focusPeak(id){
+    const p=peaks.find(x=>x.id===id);if(!p)return;
+    selectedId=id;buildList();
+    if(map&&markerById[id]){map.flyTo([p.lat,p.lon],Math.max(map.getZoom(),5),{duration:.65});markerById[id].openPopup();}
+  }
+  function initMap(){
+    if(!window.L)return;
+    map=L.map('map',{worldCopyJump:true,scrollWheelZoom:false,zoomControl:true,minZoom:1,maxZoom:17}).setView([18,14],2);
+    const light=L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',{
+      maxZoom:19,attribution:'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'});
+    const satellite=L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',{
+      maxZoom:17,attribution:'Tiles &copy; Esri and imagery providers'});
+    light.addTo(map);L.control.layers({'Light atlas':light,'Satellite imagery':satellite},null,{position:'topright',collapsed:true}).addTo(map);
+    peaks.forEach(p=>{
+      const marker=L.circleMarker([p.lat,p.lon],{radius:9,color:'#17303b',weight:2.1,fillColor:'#edb269',fillOpacity:1});
+      marker.bindTooltip(safe(p.name),{direction:'top',offset:[0,-10]});
+      marker.bindPopup(`<div class="mountain-popup"><div class="overline">${safe(p.continent)} · Summit marker</div><h3>${safe(p.name)}</h3><span class="metric">${fmt(p.elevation)} m</span><p><strong>${safe(p.tagline)}</strong></p><p>${safe(p.detail)}</p><p>${safe(p.region)}</p></div>`,{maxWidth:260});
+      marker.on('click',()=>{selectedId=p.id;buildList();});
+      marker.addTo(map);markerById[p.id]=marker;
+    });
+    fallbackEl.style.display='none';
+    setTimeout(()=>{if(map)map.invalidateSize();},100);
+  }
+  document.querySelectorAll('[data-filter]').forEach(btn=>btn.addEventListener('click',()=>showFilter(btn.dataset.filter)));
+  buildList();
+  window.addEventListener('load',()=>{
+    let attempts=0;
+    const tryInit=setInterval(()=>{
+      if(window.L){clearInterval(tryInit);initMap();}
+      else if(++attempts>=36){clearInterval(tryInit);fallbackEl.innerHTML='<strong>Interactive map needs an internet connection</strong><small>The mountain directory still works. Open the published page online to load Leaflet and map imagery.</small>';}
+    },250);
+  });
+  </script>
+</body>
+</html>

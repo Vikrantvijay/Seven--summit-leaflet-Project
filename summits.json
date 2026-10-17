@@ -1,0 +1,79 @@
+[
+  {
+    "name": "Mount Everest",
+    "continent": "Asia",
+    "region": "Nepal / China",
+    "elevation": 8848.86,
+    "lat": 27.9881,
+    "lon": 86.925,
+    "tagline": "The highest point on Earth.",
+    "detail": "The summit rises above the Himalaya on the Nepal–Tibet border.",
+    "id": "everest"
+  },
+  {
+    "name": "Aconcagua",
+    "continent": "South America",
+    "region": "Argentina",
+    "elevation": 6961,
+    "lat": -32.6532,
+    "lon": -70.0109,
+    "tagline": "The roof of the Andes.",
+    "detail": "The highest mountain outside Asia.",
+    "id": "aconcagua"
+  },
+  {
+    "name": "Denali",
+    "continent": "North America",
+    "region": "Alaska, United States",
+    "elevation": 6190,
+    "lat": 63.0695,
+    "lon": -151.0074,
+    "tagline": "North America’s towering giant.",
+    "detail": "Famous for its dramatic relief and severe subarctic weather.",
+    "id": "denali"
+  },
+  {
+    "name": "Kilimanjaro",
+    "continent": "Africa",
+    "region": "Tanzania",
+    "elevation": 5895,
+    "lat": -3.0674,
+    "lon": 37.3556,
+    "tagline": "An isolated volcanic massif.",
+    "detail": "An extraordinary journey through changing ecological zones.",
+    "id": "kilimanjaro"
+  },
+  {
+    "name": "Mount Elbrus",
+    "continent": "Europe",
+    "region": "Russia",
+    "elevation": 5642,
+    "lat": 43.3499,
+    "lon": 42.4453,
+    "tagline": "A twin-peaked volcanic mountain.",
+    "detail": "A Caucasus giant, included in the European Seven Summits list.",
+    "id": "elbrus"
+  },
+  {
+    "name": "Vinson Massif",
+    "continent": "Antarctica",
+    "region": "Ellsworth Mountains, Antarctica",
+    "elevation": 4892,
+    "lat": -78.5255,
+    "lon": -85.6171,
+    "tagline": "The continent’s remote summit.",
+    "detail": "A remote Antarctic peak requiring an expedition to reach.",
+    "id": "vinson"
+  },
+  {
+    "name": "Puncak Jaya",
+    "continent": "Oceania",
+    "region": "Central Papua, Indonesia",
+    "elevation": 4884,
+    "lat": -4.0788,
+    "lon": 137.1583,
+    "tagline": "A dramatic equatorial rock summit.",
+    "detail": "Also called Carstensz Pyramid; the Oceania peak in the Messner list.",
+    "id": "puncak"
+  }
+]
